@@ -15,7 +15,7 @@ class FastInferenceInterface:
 
     async def on_message(self, msg):
         instruction = json.loads(msg.data.decode("utf-8"))
-        # instruction['args'] = json.loads(instruction['args'])
+        instruction['args'] = json.loads(instruction['args'])
         try:
             if isinstance(instruction['prompt'], list):
                 instruction['args']['prompt'] = instruction['prompt']

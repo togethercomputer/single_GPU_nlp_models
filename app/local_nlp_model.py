@@ -135,6 +135,7 @@ class LocalNLPModel(FastInferenceInterface):
             error = traceback.format_exc()
             print(error)
             raise e
+        print(f"<LocalNLPModel>__init__: finished!")
 
     def infer(self, job_ids, args) -> Dict:
         coord_url = os.environ.get("COORDINATOR_URL", "localhost:8093/my_coord")
