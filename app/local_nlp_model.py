@@ -107,8 +107,7 @@ def post_processing_text(input_text, output_text, model_name, args):
 
 
 def to_result(input_text, output_text, model_name, args):
-    result = {}
-    items = []
+    result = []
     for i in range(len(output_text)):
         item = {'choices': [], }
         print(f"<to_result> output{i}: {len(input_text[i])} / {len(output_text[i])}")
@@ -118,8 +117,7 @@ def to_result(input_text, output_text, model_name, args):
             "finish_reason": "length"
         }
         item['choices'].append(choice)
-        items.append(item)
-    result['inference_result'] = items
+        result.append({'inference_result': item})
     return result
 
 
@@ -138,17 +136,20 @@ class LocalNLPModel(FastInferenceInterface):
             print(error)
             raise e
 
-    def infer(self, job_id, args) -> Dict:
+    def infer(self, job_ids, args) -> Dict:
         coord_url = os.environ.get("COORDINATOR_URL", "localhost:8093/my_coord")
         worker_name = os.environ.get("WORKER_NAME", "planetv2")
 
-        res = requests.patch(
-            f"http://{coord_url}/api/v1/g/jobs/atomic_job/{job_id}",
-            json={
-                "status": "running",
-            }
-        )
-        print(f"Job <{job_id}> has been processed")
+        assert isinstance(job_ids, list)
+        for job_id in job_ids:
+            res = requests.patch(
+                f"http://{coord_url}/api/v1/g/jobs/atomic_job/{job_id}",
+                json={
+                    "status": "running",
+                }
+            ).json()
+            print(f"Job <{job_id}> {res['status']}")
+            print(f"Job <{job_id}> has been batched.")
 
         raw_text = args['prompt']
 
@@ -198,23 +199,25 @@ class LocalNLPModel(FastInferenceInterface):
             answers.extend(current_output_texts)
 
         end_time = time.time()
-        print(f"Job-{job_id} {self.model_name} Inference takes {end_time - start_time}s")
+        print(f"<{self.model_name}> current batch inference takes {end_time - start_time}s")
         # print(f"outputs by hf model: {outputs}")
         result = to_result(raw_text, answers, args.model_name, args)
-        return_payload = {
-            'request': args,
-            'result': result,
-        }
 
-        requests.patch(
-            f"http://{coord_url}/api/v1/g/jobs/atomic_job/{job_id}",
-            json={
-                "status": "finished",
-                "output": return_payload,
-                "processed_by": worker_name,
-            },
-        )
-        return return_payload
+        for i in range(len(job_ids)):
+            job_id = job_id[i]
+            return_payload = {
+                'request': args,
+                'result': result[i],
+            }
+            requests.patch(
+                f"http://{coord_url}/api/v1/g/jobs/atomic_job/{job_id}",
+                json={
+                    "status": "finished",
+                    "output": return_payload,
+                    "processed_by": worker_name,
+                },
+            )
+        return {"worker_states": "finished"}
 
 
 if __name__ == "__main__":

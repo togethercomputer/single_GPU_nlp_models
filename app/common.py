@@ -27,13 +27,26 @@ class FastInferenceInterface:
             traceback.print_exc()
             print("error in inference: "+str(e))
 
-        instruction['args']['temperature'] = instruction.get('temperature', 0.9)
-        instruction['args']['top_p'] = instruction.get('top_p', 0)
-        instruction['args']['max_tokens'] = instruction.get('max_tokens', 16)
-        instruction['args']['stop'] = instruction.get('stop', [])
-        instruction['args']['echo'] = instruction.get('echo', False)
+        # instruction['args']['temperature'] = instruction.get('temperature', 0.9)
+        # instruction['args']['top_p'] = instruction.get('top_p', 0)
+        # instruction['args']['max_tokens'] = instruction.get('max_tokens', 16)
+        # instruction['args']['stop'] = instruction.get('stop', [])
+        # instruction['args']['echo'] = instruction.get('echo', False)
+        if 'temperature' not in instruction['args']:
+            instruction['args']['temperature'] = 0.9
+        if 'top_p'not in instruction['args']:
+            instruction['args']['top_p'] = 0
+        if 'max_tokens' not in instruction['args']:
+            instruction['args']['max_tokens'] = 16
+        if 'stop' not in instruction['args']:
+            instruction['args']['stop'] = []
+        if 'echo' not in instruction['args']:
+            instruction['args']['echo'] = False
+
         instruction['args']['seed'] = instruction.get('seed', 3406)
         job_id = instruction['id']
+        if isinstance(job_id, str):
+            job_id = [job_id]
         try: 
             self.infer(job_id, instruction['args'])
         except Exception as e:
