@@ -156,7 +156,7 @@ class LocalNLPModel(FastInferenceInterface):
 
         start_time = time.time()
 
-        raw_text = pre_processing_texts(raw_text, args.model_name)
+        raw_text = pre_processing_texts(raw_text, self.model_name)
 
         batch_size = min(len(raw_text), self.batch_size)
         num_iter = math.ceil(len(raw_text) / batch_size)
@@ -202,7 +202,7 @@ class LocalNLPModel(FastInferenceInterface):
         end_time = time.time()
         print(f"<{self.model_name}> current batch inference takes {end_time - start_time}s")
         # print(f"outputs by hf model: {outputs}")
-        result = to_result(raw_text, answers, args.model_name, args)
+        result = to_result(raw_text, answers, self.model_name, args)
 
         for i in range(len(job_ids)):
             job_id = job_id[i]
