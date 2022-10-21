@@ -15,7 +15,7 @@ from common import FastInferenceInterface
 
 def get_huggingface_tokenizer_model(args, model_name, device):
 
-    if model_name == 'together.t5-11b':
+    if model_name == 'together.t511b':
         tokenizer = AutoTokenizer.from_pretrained('t5-11b', model_max_length=512)
         # tokenizer.model_max_length=512
         model = T5ForConditionalGeneration.from_pretrained('t5-11b')
@@ -26,7 +26,7 @@ def get_huggingface_tokenizer_model(args, model_name, device):
     elif model_name == 'together.ul2':
         tokenizer = AutoTokenizer.from_pretrained('google/ul2')
         model = T5ForConditionalGeneration.from_pretrained("google/ul2")
-    elif model_name == 'together.gpt-j-6b':
+    elif model_name == 'together.gptj6b':
         tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-j-6B")
         model = AutoModelForCausalLM.from_pretrained("EleutherAI/gpt-j-6B")
     else:
@@ -44,7 +44,7 @@ def get_huggingface_tokenizer_model(args, model_name, device):
 
 
 def pre_processing_texts(input_text, model_name):
-    if model_name == 'together.t5-11b':
+    if model_name == 'together.t511b':
         output_text = []
         for text in input_text:
             output_text.append(text+"<extra_id_0>")
@@ -65,7 +65,7 @@ def post_processing_text(input_text, output_text, model_name, args):
     if args['max_tokens'] == 0:
         return ""
 
-    if model_name == 'together.gpt-j-6b':
+    if model_name == 'together.gptj6b':
         if not args['echo']:
             text = output_text[len(input_text):]
         else:
@@ -80,8 +80,8 @@ def post_processing_text(input_text, output_text, model_name, args):
                 if text.find(stop_token) != -1:
                     end_pos = min(text.find(stop_token) + len(stop_token), end_pos)
             print(f"<post_processing_text>2 end_pos: {end_pos}.")
-    elif model_name == 'together.ul2' or model_name == 'together.t0pp' or model_name == 'together.t5-11b':
-        if model_name == 'together.t5-11b':
+    elif model_name == 'together.ul2' or model_name == 'together.t0pp' or model_name == 'together.t511b':
+        if model_name == 'together.t511b':
             input_text = input_text.replace("<extra_id_0>", "")
         if args['echo']:
             text = input_text+' '+output_text

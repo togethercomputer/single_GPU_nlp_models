@@ -6,7 +6,7 @@ from local_nlp_model import LocalNLPModel
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Local Inference Runner with coordinator.')
-    parser.add_argument('--model-name', type=str, default='together.gpt-j-6b', metavar='S',
+    parser.add_argument('--model-name', type=str, default='together.gptj6b', metavar='S',
                         help='trained model path')
     parser.add_argument('--cuda-id', type=int, default=0, metavar='S',
                         help='cuda-id (default:0)')
