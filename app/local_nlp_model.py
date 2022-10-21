@@ -205,7 +205,7 @@ class LocalNLPModel(FastInferenceInterface):
         result = to_result(raw_text, answers, self.model_name, args)
 
         for i in range(len(job_ids)):
-            job_id = job_id[i]
+            job_id = job_ids[i]
             return_payload = {
                 'request': args,
                 'result': result[i],
