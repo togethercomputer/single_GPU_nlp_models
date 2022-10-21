@@ -1,0 +1,8 @@
+Bootstrap: docker
+From: huggingface/transformers-pytorch-gpu
+
+%files
+    app /app
+    
+%post
+    pip3 install -r /app/requirements.txt

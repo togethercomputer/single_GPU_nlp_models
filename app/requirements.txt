@@ -1,0 +1,7 @@
+uuid7
+boto3
+websocket-client
+loguru
+rel
+nats-py
+transformers
