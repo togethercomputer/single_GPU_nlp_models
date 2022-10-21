@@ -126,7 +126,7 @@ class LocalNLPModel(FastInferenceInterface):
         super().__init__(model_name, args)
         assert (torch.cuda.is_available())
         self.device = torch.device('cuda', args.cuda_id)
-        self.batch_size = 8
+        self.batch_size = args.batch_size
         self.model_name = model_name
         try:
             self.tokenizer, self.model = get_huggingface_tokenizer_model(args, self.model_name, self.device)
