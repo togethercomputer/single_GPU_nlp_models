@@ -135,7 +135,7 @@ class LocalNLPModel(FastInferenceInterface):
             error = traceback.format_exc()
             print(error)
             raise e
-        print(f"<LocalNLPModel>__init__: finished!")
+        print(f"<LocalNLPModel.{self.model_name}>__init__: finished!")
 
     def infer(self, job_ids, args) -> Dict:
         coord_url = os.environ.get("COORDINATOR_URL", "localhost:8093/my_coord")
@@ -149,8 +149,8 @@ class LocalNLPModel(FastInferenceInterface):
                     "status": "running",
                 }
             ).json()
-            print(f"Job <{job_id}> {res['status']}")
-            print(f"Job <{job_id}> has been batched.")
+            print(f"<LocalNLPModel.{self.model_name}> Job <{job_id}> {res['status']}")
+            print(f"<LocalNLPModel.{self.model_name}> Job <{job_id}> has been batched.")
 
         raw_text = args['prompt']
 
@@ -194,13 +194,13 @@ class LocalNLPModel(FastInferenceInterface):
                     output_scores=True,  # return logit score
                     output_hidden_states=True,  # return embeddings
                 )
-            current_output_texts = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=False)
-            print(f"<Include_special_tokens>:", current_output_texts)
+            # current_output_texts = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=False)
+            # print(f"<Include_special_tokens>:", current_output_texts)
             current_output_texts = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
             answers.extend(current_output_texts)
 
         end_time = time.time()
-        print(f"<{self.model_name}> current batch inference takes {end_time - start_time}s")
+        print(f"<LocalNLPModel.{self.model_name}> current batch inference takes {end_time - start_time}s")
         # print(f"outputs by hf model: {outputs}")
         result = to_result(raw_text, answers, self.model_name, args)
 

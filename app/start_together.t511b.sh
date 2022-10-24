@@ -1,0 +1,1 @@
+python start.py --fp16 --cuda-id 2 --model-name together.t511b
